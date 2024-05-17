@@ -7,10 +7,15 @@ import ReplayIcon from "@mui/icons-material/Replay";
 import CloseIcon from "@mui/icons-material/Close";
 import { useState, useEffect } from "react";
 import { v4 } from "uuid";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchJoke } from "../redux/jokeSlice";
 
 const TodoList = () => {
     const [todoList, setTodoList] = useState([]);
     const [todo, setTodo] = useState("");
+    const [joke, setJoke] = useState("");
+    const dispatch = useDispatch();
+    const jokeData = useSelector((state) => state.joke);
 
     const handleInputChange = (e) => {
         if (e.target.value) {
@@ -35,7 +40,13 @@ const TodoList = () => {
 
     useEffect(() => {
         setTodoList(JSON.parse(localStorage.getItem("todoList")) || []);
-    }, []);
+        dispatch(fetchJoke());
+        console.log("dispatched");
+    }, [dispatch]);
+
+    useEffect(() => {
+        setJoke(jokeData.joke.setup + " - " + jokeData.joke.punchline);
+    }, [jokeData]);
 
     const handleDelete = (id) => {
         let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
@@ -93,29 +104,32 @@ const TodoList = () => {
             }}
         >
             <Box>
-                <Box
-                    sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        marginBottom: 4,
-                    }}
-                >
-                    <TextField
-                        id="outlined-basic"
-                        label="Add Task"
-                        variant="outlined"
-                        onChange={handleInputChange}
-                        value={todo}
-                        sx={{ width: "50%", marginRight: 2 }}
-                    />
-                    <Button
-                        variant="contained"
-                        onClick={handleBtnChange}
-                        disabled={!todo}
+                <form>
+                    <Box
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            marginBottom: 4,
+                        }}
                     >
-                        <DoneIcon />
-                    </Button>
-                </Box>
+                        <TextField
+                            id="outlined-basic"
+                            label="Add Task"
+                            variant="outlined"
+                            onChange={handleInputChange}
+                            value={todo}
+                            sx={{ width: "50%", marginRight: 2 }}
+                        />
+                        <Button
+                            variant="contained"
+                            onClick={handleBtnChange}
+                            disabled={!todo}
+                            type="submit"
+                        >
+                            <DoneIcon />
+                        </Button>
+                    </Box>
+                </form>
 
                 {todoList.map((todo) => (
                     <Box
@@ -133,24 +147,27 @@ const TodoList = () => {
                         }}
                     >
                         {todo.edit ? (
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                }}
-                            >
-                                <TextField
-                                    sx={{ marginRight: 2 }}
-                                    id="editInput"
-                                    variant="standard"
-                                />
-                                <Button
-                                    variant="contained"
-                                    onClick={handleEditSave(todo.id)}
+                            <form>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                    }}
                                 >
-                                    <DoneIcon />
-                                </Button>
-                            </Box>
+                                    <TextField
+                                        sx={{ marginRight: 2 }}
+                                        id="editInput"
+                                        variant="standard"
+                                    />
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleEditSave(todo.id)}
+                                        type="submit"
+                                    >
+                                        <DoneIcon />
+                                    </Button>
+                                </Box>
+                            </form>
                         ) : (
                             <Typography>
                                 {todo.completed ? (
@@ -173,7 +190,10 @@ const TodoList = () => {
                                     <CloseIcon />
                                 </Button>
                             ) : (
-                                <Button onClick={() => handleEdit(todo.id)}>
+                                <Button
+                                    sx={{ marginLeft: 2 }}
+                                    onClick={() => handleEdit(todo.id)}
+                                >
                                     <EditIcon />
                                 </Button>
                             )}
@@ -214,7 +234,7 @@ const TodoList = () => {
                             marginTop: 2,
                         }}
                     >
-                        TODO: api call
+                        {joke}
                     </Typography>
                 )}
             </Box>
