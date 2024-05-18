@@ -17,6 +17,7 @@ const TodoList = () => {
     const dispatch = useDispatch();
     const jokeData = useSelector((state) => state.joke);
 
+    // value of the main input field
     const handleInputChange = (e) => {
         if (e.target.value) {
             setTodo(e.target.value);
@@ -25,6 +26,7 @@ const TodoList = () => {
         }
     };
 
+    // store the todo in local storage
     const handleBtnChange = () => {
         let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
         todoList.push({
@@ -38,12 +40,13 @@ const TodoList = () => {
         setTodo("");
     };
 
+    // get the todo list from local storage and call the joke API
     useEffect(() => {
         setTodoList(JSON.parse(localStorage.getItem("todoList")) || []);
         dispatch(fetchJoke());
-        console.log("dispatched");
     }, [dispatch]);
 
+    // set the joke in the state
     useEffect(() => {
         setJoke(jokeData.joke.setup + " - " + jokeData.joke.punchline);
     }, [jokeData]);
@@ -104,6 +107,7 @@ const TodoList = () => {
             }}
         >
             <Box>
+                {/* create todo */}
                 <form>
                     <Box
                         sx={{
@@ -131,6 +135,7 @@ const TodoList = () => {
                     </Box>
                 </form>
 
+                {/* TODO list */}
                 {todoList.map((todo) => (
                     <Box
                         key={todo.id}
@@ -146,6 +151,7 @@ const TodoList = () => {
                             mt: 1,
                         }}
                     >
+                        {/* updating the todo */}
                         {todo.edit ? (
                             <form>
                                 <Box
@@ -178,6 +184,7 @@ const TodoList = () => {
                             </Typography>
                         )}
 
+                        {/* action icons */}
                         <Box
                             sx={{
                                 display: "flex",
@@ -225,7 +232,7 @@ const TodoList = () => {
                     </Box>
                 ))}
 
-                {/* Easter egg */}
+                {/* API data */}
                 {todoList.length === 0 && (
                     <Typography
                         sx={{

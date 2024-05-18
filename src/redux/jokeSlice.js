@@ -8,6 +8,7 @@ export const fetchJoke = createAsyncThunk("fetchJoke", async () => {
     return await response.json();
 });
 
+// reducer
 const jokeSlice = createSlice({
     name: "joke",
     initialState: {
