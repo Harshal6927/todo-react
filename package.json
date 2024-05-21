@@ -1,7 +1,7 @@
 {
   "name": "todo",
   "version": "0.1.0",
-  "homepage": "https://harshal6927.github.io/todo-react",
+  "homepage": "https://todo.harshallaheri.me",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.11.4",
