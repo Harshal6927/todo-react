@@ -15,8 +15,23 @@ const jokeSlice = createSlice({
         joke: "",
     },
     extraReducers: (builder) => {
+        builder.addCase(fetchJoke.pending, (state, action) => {
+            state.joke = {
+                setup: "Loading",
+                punchline: "Loading",
+            };
+        });
+
         builder.addCase(fetchJoke.fulfilled, (state, action) => {
             state.joke = action.payload;
+            console.log(action.payload);
+        });
+
+        builder.addCase(fetchJoke.rejected, (state, action) => {
+            state.joke = {
+                setup: "Error",
+                punchline: "Error",
+            };
         });
     },
 });
