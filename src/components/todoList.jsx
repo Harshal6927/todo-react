@@ -26,6 +26,20 @@ const TodoList = () => {
         }
     };
 
+    // value of the edit input field
+    const handleUpdateChange = (id) => {
+        return (e) => {
+            let tempTodoList = todoList;
+            tempTodoList = tempTodoList.map((todo) => {
+                if (todo.id === id) {
+                    todo.task = e.target.value;
+                }
+                return todo;
+            });
+            setTodoList(tempTodoList);
+        };
+    };
+
     // store the todo in local storage
     const handleBtnChange = () => {
         let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
@@ -163,6 +177,8 @@ const TodoList = () => {
                                     <TextField
                                         sx={{ marginRight: 2 }}
                                         id="editInput"
+                                        onChange={handleUpdateChange(todo.id)}
+                                        value={todo.task}
                                         variant="standard"
                                     />
                                     <Button

@@ -24,7 +24,6 @@ const jokeSlice = createSlice({
 
         builder.addCase(fetchJoke.fulfilled, (state, action) => {
             state.joke = action.payload;
-            console.log(action.payload);
         });
 
         builder.addCase(fetchJoke.rejected, (state, action) => {
