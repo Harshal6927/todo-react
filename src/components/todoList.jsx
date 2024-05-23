@@ -10,6 +10,10 @@ import { v4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchJoke } from "../redux/jokeSlice";
 
+const getTodoList = () => {
+    return JSON.parse(localStorage.getItem("todoList")) || [];
+};
+
 const TodoList = () => {
     const [todoList, setTodoList] = useState([]);
     const [todo, setTodo] = useState("");
@@ -42,7 +46,7 @@ const TodoList = () => {
 
     // store the todo in local storage
     const handleBtnChange = () => {
-        let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
+        let todoList = getTodoList();
         todoList.push({
             id: v4(),
             task: todo,
@@ -56,7 +60,7 @@ const TodoList = () => {
 
     // search the todo list
     const handleSearchChange = (e) => {
-        let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
+        let todoList = getTodoList();
         todoList = todoList.filter((todo) =>
             todo.task.toLowerCase().includes(e.target.value.toLowerCase())
         );
@@ -65,7 +69,7 @@ const TodoList = () => {
 
     // get the todo list from local storage and call the joke API
     useEffect(() => {
-        setTodoList(JSON.parse(localStorage.getItem("todoList")) || []);
+        setTodoList(getTodoList());
         dispatch(fetchJoke());
     }, [dispatch]);
 
@@ -75,14 +79,14 @@ const TodoList = () => {
     }, [jokeData]);
 
     const handleDelete = (id) => {
-        let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
+        let todoList = getTodoList();
         todoList = todoList.filter((todo) => todo.id !== id);
         localStorage.setItem("todoList", JSON.stringify(todoList));
         setTodoList(todoList);
     };
 
     const handleComplete = (id) => {
-        let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
+        let todoList = getTodoList();
         todoList = todoList.map((todo) => {
             if (todo.id === id) {
                 todo.completed = !todo.completed;
@@ -94,7 +98,7 @@ const TodoList = () => {
     };
 
     const handleEdit = (id) => {
-        let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
+        let todoList = getTodoList();
         todoList = todoList.map((todo) => {
             if (todo.id === id) {
                 todo.edit = !todo.edit;
@@ -107,7 +111,7 @@ const TodoList = () => {
 
     const handleEditSave = (id) => {
         return () => {
-            let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
+            let todoList = getTodoList();
             todoList = todoList.map((todo) => {
                 if (todo.id === id) {
                     todo.task = document.getElementById("editInput").value;
