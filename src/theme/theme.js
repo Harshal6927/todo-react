@@ -19,6 +19,7 @@ export const getDesignTokens = (mode) => ({
                   delete: { 500: "#ed3e41" },
                   done: { 500: "#23a55a" },
                   taskbg: { 500: "#ecebe6" },
+                  active: { 500: "#212121" },
               }
             : {
                   // palette values for dark mode
@@ -35,6 +36,7 @@ export const getDesignTokens = (mode) => ({
                   delete: { 500: "#ed3e41" },
                   done: { 500: "#23a55a" },
                   taskbg: { 500: "#2b2d31" },
+                  active: { 500: "#e0e0e0" },
               }),
     },
 });

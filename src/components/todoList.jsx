@@ -54,6 +54,15 @@ const TodoList = () => {
         setTodo("");
     };
 
+    // search the todo list
+    const handleSearchChange = (e) => {
+        let todoList = JSON.parse(localStorage.getItem("todoList")) || [];
+        todoList = todoList.filter((todo) =>
+            todo.task.toLowerCase().includes(e.target.value.toLowerCase())
+        );
+        setTodoList(todoList);
+    };
+
     // get the todo list from local storage and call the joke API
     useEffect(() => {
         setTodoList(JSON.parse(localStorage.getItem("todoList")) || []);
@@ -122,32 +131,46 @@ const TodoList = () => {
         >
             <Box>
                 {/* create todo */}
-                <form>
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            marginBottom: 4,
-                        }}
-                    >
-                        <TextField
-                            id="outlined-basic"
-                            label="Add Task"
-                            variant="outlined"
-                            onChange={handleInputChange}
-                            value={todo}
-                            sx={{ width: "50%", marginRight: 2 }}
-                        />
-                        <Button
-                            variant="contained"
-                            onClick={handleBtnChange}
-                            disabled={!todo}
-                            type="submit"
+                <Box
+                    sx={{
+                        display: "grid",
+                        marginBottom: 4,
+                        gridTemplateColumns: "60% 40%",
+                    }}
+                >
+                    <form>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                            }}
                         >
-                            <DoneIcon />
-                        </Button>
-                    </Box>
-                </form>
+                            <TextField
+                                id="outlined-basic"
+                                label="Add Task"
+                                variant="outlined"
+                                onChange={handleInputChange}
+                                value={todo}
+                                sx={{ width: "100%", paddingRight: 1 }}
+                            />
+                            <Button
+                                variant="contained"
+                                onClick={handleBtnChange}
+                                disabled={!todo}
+                                type="submit"
+                                sx={{ marginRight: 5 }}
+                            >
+                                <DoneIcon />
+                            </Button>
+                        </Box>
+                    </form>
+                    <TextField
+                        id="search"
+                        label="Search"
+                        variant="outlined"
+                        onChange={handleSearchChange}
+                    />
+                </Box>
 
                 {/* TODO list */}
                 {todoList.map((todo) => (
@@ -163,6 +186,7 @@ const TodoList = () => {
                             borderRadius: 1,
                             p: 2,
                             mt: 1,
+                            ":hover": { borderColor: "active.500" },
                         }}
                     >
                         {/* updating the todo */}
