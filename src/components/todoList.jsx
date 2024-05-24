@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { v4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchJoke } from "../redux/jokeSlice";
+import Alert from "@mui/material/Alert";
 
 const getTodoList = () => {
     return JSON.parse(localStorage.getItem("todoList")) || [];
@@ -18,6 +19,7 @@ const TodoList = () => {
     const [todoList, setTodoList] = useState([]);
     const [todo, setTodo] = useState("");
     const [joke, setJoke] = useState("");
+    const [error, setError] = useState(false);
     const dispatch = useDispatch();
     const jokeData = useSelector((state) => state.joke);
 
@@ -41,6 +43,13 @@ const TodoList = () => {
                 return todo;
             });
             setTodoList(tempTodoList);
+
+            if (!e.target.value) {
+                setError(true);
+                return;
+            } else {
+                setError(false);
+            }
         };
     };
 
@@ -125,171 +134,180 @@ const TodoList = () => {
     };
 
     return (
-        <Container
-            sx={{
-                backgroundColor: "taskbg.500",
-                borderRadius: 1,
-                p: 3,
-                marginTop: 4,
-            }}
-        >
-            <Box>
-                {/* create todo */}
-                <Box
-                    sx={{
-                        display: "grid",
-                        marginBottom: 4,
-                        gridTemplateColumns: "60% 40%",
-                    }}
-                >
-                    <form>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <TextField
-                                id="outlined-basic"
-                                label="Add Task"
-                                variant="outlined"
-                                onChange={handleInputChange}
-                                value={todo}
-                                sx={{ width: "100%", paddingRight: 1 }}
-                            />
-                            <Button
-                                variant="contained"
-                                onClick={handleBtnChange}
-                                disabled={!todo}
-                                type="submit"
-                                sx={{ marginRight: 5 }}
-                            >
-                                <DoneIcon />
-                            </Button>
-                        </Box>
-                    </form>
-                    <TextField
-                        id="search"
-                        label="Search"
-                        variant="outlined"
-                        onChange={handleSearchChange}
-                    />
-                </Box>
+        <>
+            {error && <Alert severity="error">TODOs cannot be empty!</Alert>}
 
-                {/* TODO list */}
-                {todoList.map((todo) => (
+            <Container
+                sx={{
+                    backgroundColor: "taskbg.500",
+                    borderRadius: 1,
+                    p: 3,
+                    marginTop: 4,
+                }}
+            >
+                <Box>
+                    {/* create todo */}
                     <Box
-                        key={todo.id}
                         sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            border: "1px solid",
-                            borderColor: "divider.500",
-                            overflowWrap: "anywhere",
-                            borderRadius: 1,
-                            p: 2,
-                            mt: 1,
-                            ":hover": { borderColor: "active.500" },
+                            display: "grid",
+                            marginBottom: 4,
+                            gridTemplateColumns: "60% 40%",
                         }}
                     >
-                        {/* updating the todo */}
-                        {todo.edit ? (
-                            <form>
-                                <Box
-                                    sx={{
-                                        display: "flex",
-                                        justifyContent: "center",
-                                    }}
-                                >
-                                    <TextField
-                                        sx={{ marginRight: 2 }}
-                                        id="editInput"
-                                        onChange={handleUpdateChange(todo.id)}
-                                        value={todo.task}
-                                        variant="standard"
-                                    />
-                                    <Button
-                                        variant="contained"
-                                        onClick={handleEditSave(todo.id)}
-                                        type="submit"
-                                    >
-                                        <DoneIcon />
-                                    </Button>
-                                </Box>
-                            </form>
-                        ) : (
-                            <Typography>
-                                {todo.completed ? (
-                                    <s>{todo.task}</s>
-                                ) : (
-                                    todo.task
-                                )}
-                            </Typography>
-                        )}
-
-                        {/* action icons */}
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                color: "text",
-                            }}
-                        >
-                            {todo.edit ? (
-                                <Button onClick={() => handleEdit(todo.id)}>
-                                    <CloseIcon />
-                                </Button>
-                            ) : (
-                                <Button
-                                    sx={{ marginLeft: 2 }}
-                                    onClick={() => handleEdit(todo.id)}
-                                >
-                                    <EditIcon />
-                                </Button>
-                            )}
-
-                            <Button
-                                onClick={() => handleDelete(todo.id)}
+                        <form>
+                            <Box
                                 sx={{
-                                    color: "delete.500",
+                                    display: "flex",
+                                    justifyContent: "center",
                                 }}
                             >
-                                <DeleteIcon />
-                            </Button>
-
-                            {todo.completed ? (
-                                <Button onClick={() => handleComplete(todo.id)}>
-                                    <ReplayIcon />
-                                </Button>
-                            ) : (
+                                <TextField
+                                    id="outlined-basic"
+                                    label="Add Task"
+                                    variant="outlined"
+                                    onChange={handleInputChange}
+                                    value={todo}
+                                    sx={{ width: "100%", paddingRight: 1 }}
+                                />
                                 <Button
-                                    onClick={() => handleComplete(todo.id)}
-                                    sx={{
-                                        color: "done.500",
-                                    }}
+                                    variant="contained"
+                                    onClick={handleBtnChange}
+                                    disabled={!todo}
+                                    type="submit"
+                                    sx={{ marginRight: 5 }}
                                 >
                                     <DoneIcon />
                                 </Button>
-                            )}
-                        </Box>
+                            </Box>
+                        </form>
+                        <TextField
+                            id="search"
+                            label="Search"
+                            variant="outlined"
+                            onChange={handleSearchChange}
+                        />
                     </Box>
-                ))}
 
-                {/* API data */}
-                {todoList.length === 0 && (
-                    <Typography
-                        sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            marginTop: 2,
-                        }}
-                    >
-                        {joke}
-                    </Typography>
-                )}
-            </Box>
-        </Container>
+                    {/* TODO list */}
+                    {todoList.map((todo) => (
+                        <Box
+                            key={todo.id}
+                            sx={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                border: "1px solid",
+                                borderColor: "divider.500",
+                                overflowWrap: "anywhere",
+                                borderRadius: 1,
+                                p: 2,
+                                mt: 1,
+                                ":hover": { borderColor: "active.500" },
+                            }}
+                        >
+                            {/* updating the todo */}
+                            {todo.edit ? (
+                                <form>
+                                    <Box
+                                        sx={{
+                                            display: "flex",
+                                            justifyContent: "center",
+                                        }}
+                                    >
+                                        <TextField
+                                            sx={{ marginRight: 2 }}
+                                            id="editInput"
+                                            onChange={handleUpdateChange(
+                                                todo.id
+                                            )}
+                                            value={todo.task}
+                                            variant="standard"
+                                        />
+                                        <Button
+                                            variant="contained"
+                                            onClick={handleEditSave(todo.id)}
+                                            type="submit"
+                                            disabled={error}
+                                        >
+                                            <DoneIcon />
+                                        </Button>
+                                    </Box>
+                                </form>
+                            ) : (
+                                <Typography>
+                                    {todo.completed ? (
+                                        <s>{todo.task}</s>
+                                    ) : (
+                                        todo.task
+                                    )}
+                                </Typography>
+                            )}
+
+                            {/* action icons */}
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    color: "text",
+                                }}
+                            >
+                                {todo.edit ? (
+                                    <Button onClick={() => handleEdit(todo.id)}>
+                                        <CloseIcon />
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        sx={{ marginLeft: 2 }}
+                                        onClick={() => handleEdit(todo.id)}
+                                    >
+                                        <EditIcon />
+                                    </Button>
+                                )}
+
+                                <Button
+                                    onClick={() => handleDelete(todo.id)}
+                                    sx={{
+                                        color: "delete.500",
+                                    }}
+                                >
+                                    <DeleteIcon />
+                                </Button>
+
+                                {todo.completed ? (
+                                    <Button
+                                        onClick={() => handleComplete(todo.id)}
+                                    >
+                                        <ReplayIcon />
+                                    </Button>
+                                ) : (
+                                    <Button
+                                        onClick={() => handleComplete(todo.id)}
+                                        sx={{
+                                            color: "done.500",
+                                        }}
+                                    >
+                                        <DoneIcon />
+                                    </Button>
+                                )}
+                            </Box>
+                        </Box>
+                    ))}
+
+                    {/* API data */}
+                    {todoList.length === 0 && (
+                        <Typography
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                marginTop: 2,
+                            }}
+                        >
+                            {joke}
+                        </Typography>
+                    )}
+                </Box>
+            </Container>
+        </>
     );
 };
 
