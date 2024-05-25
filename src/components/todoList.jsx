@@ -10,6 +10,7 @@ import { v4 } from "uuid";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchJoke } from "../redux/jokeSlice";
 import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 const getTodoList = () => {
     return JSON.parse(localStorage.getItem("todoList")) || [];
@@ -20,6 +21,8 @@ const TodoList = () => {
     const [todo, setTodo] = useState("");
     const [joke, setJoke] = useState("");
     const [error, setError] = useState(false);
+    const [editFlag, setEditFlag] = useState(false);
+    const [toggleSnackbar, setToggleSnackbar] = useState(false);
     const dispatch = useDispatch();
     const jokeData = useSelector((state) => state.joke);
 
@@ -106,7 +109,13 @@ const TodoList = () => {
         setTodoList(todoList);
     };
 
+    // allow only one edit at a time
     const handleEdit = (id) => {
+        if (editFlag) {
+            setToggleSnackbar(true);
+            return;
+        }
+
         let todoList = getTodoList();
         todoList = todoList.map((todo) => {
             if (todo.id === id) {
@@ -116,6 +125,21 @@ const TodoList = () => {
         });
         localStorage.setItem("todoList", JSON.stringify(todoList));
         setTodoList(todoList);
+        setEditFlag(true);
+    };
+
+    const handleCancelEdit = (id) => {
+        let todoList = getTodoList();
+        todoList = todoList.map((todo) => {
+            if (todo.id === id) {
+                todo.edit = !todo.edit;
+            }
+            return todo;
+        });
+        localStorage.setItem("todoList", JSON.stringify(todoList));
+        setTodoList(todoList);
+        setEditFlag(false);
+        setError(false);
     };
 
     const handleEditSave = (id) => {
@@ -130,12 +154,23 @@ const TodoList = () => {
             });
             localStorage.setItem("todoList", JSON.stringify(todoList));
             setTodoList(todoList);
+            setEditFlag(false);
         };
     };
 
     return (
         <>
             {error && <Alert severity="error">TODOs cannot be empty!</Alert>}
+            <Snackbar
+                open={toggleSnackbar}
+                anchorOrigin={{ vertical: "top", horizontal: "center" }}
+                autoHideDuration={3000}
+                onClose={() => setToggleSnackbar(false)}
+            >
+                <Alert severity="warning">
+                    You can only edit one TODO at a time!
+                </Alert>
+            </Snackbar>
 
             <Container
                 sx={{
@@ -252,7 +287,11 @@ const TodoList = () => {
                                 }}
                             >
                                 {todo.edit ? (
-                                    <Button onClick={() => handleEdit(todo.id)}>
+                                    <Button
+                                        onClick={() =>
+                                            handleCancelEdit(todo.id)
+                                        }
+                                    >
                                         <CloseIcon />
                                     </Button>
                                 ) : (
