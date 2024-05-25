@@ -1,16 +1,19 @@
 import React from "react";
 import { TextField, Button, Box, Container, Typography } from "@mui/material";
+import { useState, useEffect } from "react";
+import { v4 } from "uuid";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchJoke } from "../redux/jokeSlice";
 import DoneIcon from "@mui/icons-material/Done";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ReplayIcon from "@mui/icons-material/Replay";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState, useEffect } from "react";
-import { v4 } from "uuid";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchJoke } from "../redux/jokeSlice";
 import Alert from "@mui/material/Alert";
 import Snackbar from "@mui/material/Snackbar";
+import Modal from "@mui/material/Modal";
+import Backdrop from "@mui/material/Backdrop";
+import Fade from "@mui/material/Fade";
 
 const getTodoList = () => {
     return JSON.parse(localStorage.getItem("todoList")) || [];
@@ -23,6 +26,8 @@ const TodoList = () => {
     const [error, setError] = useState(false);
     const [editFlag, setEditFlag] = useState(false);
     const [toggleSnackbar, setToggleSnackbar] = useState(false);
+    const [toggleModal, setToggleModal] = useState(false);
+    const [deleteTodoId, setDeleteTodoId] = useState(null);
     const dispatch = useDispatch();
     const jokeData = useSelector((state) => state.joke);
 
@@ -158,6 +163,16 @@ const TodoList = () => {
         };
     };
 
+    const handleModalOpen = (id) => {
+        setDeleteTodoId(id);
+        setToggleModal(true);
+    };
+
+    const handleModalClose = () => {
+        setDeleteTodoId(null);
+        setToggleModal(false);
+    };
+
     return (
         <>
             {error && <Alert severity="error">TODOs cannot be empty!</Alert>}
@@ -268,14 +283,17 @@ const TodoList = () => {
                                         </Button>
                                     </Box>
                                 </form>
-                            ) : (
-                                <Typography>
-                                    {todo.completed ? (
-                                        <s>{todo.task}</s>
-                                    ) : (
-                                        todo.task
-                                    )}
+                            ) : todo.completed ? (
+                                <Typography
+                                    sx={{
+                                        textDecoration: "line-through",
+                                        color: "#9e9e9e",
+                                    }}
+                                >
+                                    {todo.task}
                                 </Typography>
+                            ) : (
+                                <Typography>{todo.task}</Typography>
                             )}
 
                             {/* action icons */}
@@ -304,7 +322,7 @@ const TodoList = () => {
                                 )}
 
                                 <Button
-                                    onClick={() => handleDelete(todo.id)}
+                                    onClick={() => handleModalOpen(todo.id)}
                                     sx={{
                                         color: "delete.500",
                                     }}
@@ -331,6 +349,72 @@ const TodoList = () => {
                             </Box>
                         </Box>
                     ))}
+
+                    {/* modal for delete confirmation */}
+                    <Modal
+                        aria-labelledby="transition-modal-title"
+                        aria-describedby="transition-modal-description"
+                        open={toggleModal}
+                        onClose={handleModalClose}
+                        closeAfterTransition
+                        slots={{ backdrop: Backdrop }}
+                        slotProps={{
+                            backdrop: {
+                                timeout: 500,
+                            },
+                        }}
+                    >
+                        <Fade in={toggleModal}>
+                            <Box
+                                sx={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    width: 400,
+                                    bgcolor: "background.paper",
+                                    border: "2px solid background.paper",
+                                    borderRadius: 2,
+                                    boxShadow: 24,
+                                    p: 4,
+                                }}
+                            >
+                                <Typography
+                                    id="transition-modal-title"
+                                    variant="h6"
+                                    component="h2"
+                                >
+                                    You want to delete this TODO?
+                                </Typography>
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        marginTop: 2,
+                                        justifyContent: "center",
+                                    }}
+                                >
+                                    <Button
+                                        sx={{ backgroundColor: "done.500" }}
+                                        onClick={handleModalClose}
+                                    >
+                                        No
+                                    </Button>
+                                    <Button
+                                        sx={{
+                                            marginLeft: 2,
+                                            backgroundColor: "delete.500",
+                                        }}
+                                        onClick={() => {
+                                            handleDelete(deleteTodoId);
+                                            handleModalClose();
+                                        }}
+                                    >
+                                        Yes
+                                    </Button>
+                                </Box>
+                            </Box>
+                        </Fade>
+                    </Modal>
 
                     {/* API data */}
                     {todoList.length === 0 && (
