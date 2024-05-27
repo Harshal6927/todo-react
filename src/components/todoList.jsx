@@ -99,6 +99,7 @@ const TodoList = () => {
         let todoList = getTodoList();
         todoList = todoList.filter((todo) => todo.id !== id);
         localStorage.setItem("todoList", JSON.stringify(todoList));
+        document.getElementById("search").value = "";
         setTodoList(todoList);
     };
 
@@ -130,6 +131,7 @@ const TodoList = () => {
             return todo;
         });
         localStorage.setItem("todoList", JSON.stringify(todoList));
+        document.getElementById("search").value = "";
         setTodoList(todoList);
         setEditFlag(true);
     };
@@ -143,6 +145,7 @@ const TodoList = () => {
             return todo;
         });
         localStorage.setItem("todoList", JSON.stringify(todoList));
+        document.getElementById("search").value = "";
         setTodoList(todoList);
         setEditFlag(false);
         setError(false);
@@ -159,6 +162,7 @@ const TodoList = () => {
                 return todo;
             });
             localStorage.setItem("todoList", JSON.stringify(todoList));
+            document.getElementById("search").value = "";
             setTodoList(todoList);
             setEditFlag(false);
         };
