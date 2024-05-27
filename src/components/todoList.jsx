@@ -111,6 +111,7 @@ const TodoList = () => {
             return todo;
         });
         localStorage.setItem("todoList", JSON.stringify(todoList));
+        document.getElementById("search").value = "";
         setTodoList(todoList);
     };
 
@@ -200,7 +201,6 @@ const TodoList = () => {
                     <Box
                         sx={{
                             display: "grid",
-                            marginBottom: 4,
                             gridTemplateColumns: "60% 40%",
                         }}
                     >
@@ -237,6 +237,16 @@ const TodoList = () => {
                             onChange={handleSearchChange}
                         />
                     </Box>
+
+                    {/* horizontal line */}
+                    <Box
+                        sx={{
+                            borderBottom: "1px solid",
+                            borderColor: "divider.500",
+                            mt: 3,
+                            mb: 3,
+                        }}
+                    ></Box>
 
                     {/* TODO list */}
                     {todoList.map((todo) => (
